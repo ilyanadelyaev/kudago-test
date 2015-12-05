@@ -40,7 +40,7 @@ INSTALLED_APPS = (
     'core',
     'logic',
     'www',
-    'xmlrender',
+    'rssrender',
 )
 
 MIDDLEWARE_CLASSES = (
