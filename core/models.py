@@ -160,4 +160,9 @@ class PlaceData(django.db.models.Model):
 
 
 class Schedule(django.db.models.Model):
-    pass
+    event = django.db.models.ForeignKey(Event)
+    place = django.db.models.ForeignKey(Place)
+    #
+    date = django.db.models.DateField()
+    start_time = django.db.models.TimeField()
+    end_time = django.db.models.TimeField()

@@ -1,5 +1,6 @@
 import uuid
 import random
+import datetime
 
 import django.test
 
@@ -7,6 +8,15 @@ import core.models
 
 
 class ModelTests(django.test.TestCase):
+    @staticmethod
+    def _random_time():
+        dt = datetime.datetime.utcfromtimestamp(random.randint(0, 86400))
+        return datetime.time(hour=dt.hour, minute=dt.minute, second=dt.second)
+
+    @staticmethod
+    def _random_date():
+        return datetime.date.today() + datetime.timedelta(days=random.randint(0, 100))
+
     @staticmethod
     def _tag():
         tg = str(uuid.uuid4())
@@ -64,7 +74,20 @@ class ModelTests(django.test.TestCase):
             geo_longitude=lo
         )
         p.save()
-        return p.id, fi, ty, tl, tt, ur, ct, ad, la, lo
+        return p.id, fi, ty, tl, tt, ur, cid, ad, la, lo
+
+    @classmethod
+    def _schedule(cls):
+        eid, _, _, _, _, _, _ = cls._event()
+        e = core.models.Event.objects.get(id=eid)
+        pid, _, _, _, _, _, _, _, _, _ = cls._place()
+        p = core.models.Place.objects.get(id=pid)
+        dt = cls._random_date()
+        st = cls._random_time()
+        et = cls._random_time()
+        s = core.models.Schedule(event=e, place=p, date=dt, start_time=st, end_time=et)
+        s.save()
+        return s.id, eid, pid, dt, st, et
 
     def test__tag(self):
         tid, tg = self._tag()
@@ -88,7 +111,7 @@ class ModelTests(django.test.TestCase):
         t = core.models.Tag.objects.get(id=tid)
         e.eventtags_set.create(tag=t)
         et = core.models.EventTags.objects.get(event_id=eid, tag_id=tid)
-        self.assertEqual(et.event.id, eid)
+        self.assertEqual(et.event_id, eid)
         self.assertEqual(et.tag.tag, t.tag)
 
     def test__event_persons(self):
@@ -125,13 +148,13 @@ class ModelTests(django.test.TestCase):
         self.assertEqual(c.name, nm)
 
     def test__place(self):
-        pid, fi, ty, tl, tt, ur, ct, ad, la, lo = self._place()
+        pid, fi, ty, tl, tt, ur, cid, ad, la, lo = self._place()
         p = core.models.Place.objects.get(id=pid)
         self.assertEqual(p.feed_id, fi)
         self.assertEqual(p.type, ty)
         self.assertEqual(p.title, tl)
         self.assertEqual(p.url, ur)
-        self.assertEqual(p.city.id, ct.id)
+        self.assertEqual(p.city_id, cid)
         self.assertEqual(p.address, ad)
         self.assertEqual(p.geo_latitude, la)
         self.assertEqual(p.geo_longitude, lo)
@@ -143,7 +166,7 @@ class ModelTests(django.test.TestCase):
         t = core.models.Tag.objects.get(id=tid)
         p.placetags_set.create(tag=t)
         pt = core.models.PlaceTags.objects.get(place_id=pid, tag_id=tid)
-        self.assertEqual(pt.place.id, pid)
+        self.assertEqual(pt.place_id, pid)
         self.assertEqual(pt.tag.tag, t.tag)
 
     def test__place_phones(self):
@@ -189,3 +212,12 @@ class ModelTests(django.test.TestCase):
         pd = core.models.PlaceData.objects.get(place_id=pid, key=k)
         self.assertEqual(pd.key, k)
         self.assertEqual(pd.value, v)
+
+    def test__schedule(self):
+        sid, eid, pid, dt, st, et = self._schedule()
+        s = core.models.Schedule.objects.get(id=sid)
+        self.assertEqual(s.event_id, eid)
+        self.assertEqual(s.place_id, pid)
+        self.assertEqual(s.date, dt)
+        self.assertEqual(s.start_time, st)
+        self.assertEqual(s.end_time, et)
