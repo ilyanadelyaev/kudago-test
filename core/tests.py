@@ -1,91 +1,191 @@
 import uuid
+import random
 
 import django.test
 
 import core.models
 
 
-class _BaseModelTests(django.test.TestCase):
-    @staticmethod
-    def _event():
-        ar = '100+'
-        tl = str(uuid.uuid4())
-        dc = str(uuid.uuid4()) * 5
-        tt = str(uuid.uuid4()) * 10
-        e = core.models.Event(age_restrictions=ar, title=tl, description=dc, text=tt)
-        e.save()
-        return e, ar, tl, dc, tt
-
+class ModelTests(django.test.TestCase):
     @staticmethod
     def _tag():
         tg = str(uuid.uuid4())
         t = core.models.Tag(tag=tg)
         t.save()
-        return t, tg
+        return t.id, tg
 
+    @staticmethod
+    def _event():
+        fi = random.randint(0, 10000)
+        ty = core.models.EventType.other
+        tl = str(uuid.uuid4())
+        dc = str(uuid.uuid4()) * 5
+        tt = str(uuid.uuid4()) * 10
+        ar = 100
+        e = core.models.Event(
+            feed_id=fi,
+            type=ty,
+            title=tl,
+            description=dc,
+            text=tt,
+            age_restrictions=ar,
+        )
+        e.save()
+        return e.id, fi, ty, tl, dc, tt, ar
 
-class EventModelTests(_BaseModelTests):
-    def test__has_fields(self):
-        _, ar, tl, dc, tt = self._event()
-        e = core.models.Event.objects.get(title=tl)
-        self.assertEqual(e.age_restrictions, ar)
+    @staticmethod
+    def _city():
+        nm = str(uuid.uuid4())
+        c = core.models.City(name=nm)
+        c.save()
+        return c.id, nm
+
+    @classmethod
+    def _place(cls):
+        fi = random.randint(0, 10000)
+        ty = core.models.PlaceType.other
+        tl = str(uuid.uuid4())
+        tt = str(uuid.uuid4()) * 10
+        ur = str(uuid.uuid4()) * 2
+        cid, _ = cls._city()
+        ct = core.models.City.objects.get(id=cid)
+        ad = str(uuid.uuid4()) * 4
+        la = float(random.randrange(-90.0, 90.0))
+        lo = float(random.randrange(-180.0, 180.0))
+        p = core.models.Place(
+            feed_id=fi,
+            type=ty,
+            title=tl,
+            text=tt,
+            url=ur,
+            city=ct,
+            address=ad,
+            geo_latitude=la,
+            geo_longitude=lo
+        )
+        p.save()
+        return p.id, fi, ty, tl, tt, ur, ct, ad, la, lo
+
+    def test__tag(self):
+        tid, tg = self._tag()
+        t = core.models.Tag.objects.get(id=tid)
+        self.assertEqual(t.tag, tg)
+
+    def test__event(self):
+        eid, fi, ty, tl, dc, tt, ar = self._event()
+        e = core.models.Event.objects.get(id=eid)
+        self.assertEqual(e.feed_id, fi)
+        self.assertEqual(e.type, ty)
         self.assertEqual(e.title, tl)
         self.assertEqual(e.description, dc)
         self.assertEqual(e.text, tt)
+        self.assertEqual(e.age_restrictions, ar)
 
-
-class TagModelTests(_BaseModelTests):
-    def test__has_fields(self):
-        _, tg = self._tag()
-        t = core.models.Tag.objects.get(tag=tg)
-        self.assertEqual(t.tag, tg)
-
-
-class EventTagsModelTests(_BaseModelTests):
-    def test__has_fields(self):
-        e, _, _, _, _ = self._event()
-        t, _ = self._tag()
+    def test__event_tags(self):
+        eid, _, _, _, _, _, _ = self._event()
+        tid, _ = self._tag()
+        e = core.models.Event.objects.get(id=eid)
+        t = core.models.Tag.objects.get(id=tid)
         e.eventtags_set.create(tag=t)
-        et = core.models.EventTags.objects.get(event_id=e.id, tag_id=t.id)
-        self.assertEqual(et.event.id, e.id)
+        et = core.models.EventTags.objects.get(event_id=eid, tag_id=tid)
+        self.assertEqual(et.event.id, eid)
+        self.assertEqual(et.tag.tag, t.tag)
 
-
-class EventPersonsModelTests(_BaseModelTests):
-    def test__has_fields(self):
-        e, _, _, _, _ = self._event()
+    def test__event_persons(self):
+        eid, _, _, _, _, _, _ = self._event()
         pn = str(uuid.uuid4())
         pr = str(uuid.uuid4())
+        e = core.models.Event.objects.get(id=eid)
         e.eventpersons_set.create(name=pn, role=pr)
-        ep = core.models.EventPersons.objects.get(event_id=e.id, name=pn)
+        ep = core.models.EventPersons.objects.get(event_id=eid, name=pn)
         self.assertEqual(ep.name, pn)
         self.assertEqual(ep.role, pr)
 
-
-class EventImagesModelTests(_BaseModelTests):
-    def test__has_fields(self):
-        e, _, _, _, _ = self._event()
+    def test__event_images(self):
+        eid, _, _, _, _, _, _ = self._event()
         im = str(uuid.uuid4()) * 5
+        e = core.models.Event.objects.get(id=eid)
         e.eventimages_set.create(image=im)
-        ei = core.models.EventImages.objects.get(event_id=e.id, image=im)
+        ei = core.models.EventImages.objects.get(event_id=eid)
         self.assertEqual(ei.image, im)
 
-
-class EventDataModelTests(_BaseModelTests):
-    def test__has_fields(self):
-        e, _, _, _, _ = self._event()
+    def test__event_data(self):
+        eid, _, _, _, _, _, _ = self._event()
         k = str(uuid.uuid4())
         v = str(uuid.uuid4()) * 5
+        e = core.models.Event.objects.get(id=eid)
         e.eventdata_set.create(key=k, value=v)
-        ed = core.models.EventData.objects.get(event_id=e.id, key=k)
+        ed = core.models.EventData.objects.get(event_id=eid, key=k)
         self.assertEqual(ed.key, k)
         self.assertEqual(ed.value, v)
 
+    def test__city(self):
+        cid, nm = self._city()
+        c = core.models.City.objects.get(id=cid)
+        self.assertEqual(c.name, nm)
 
-class PlaceModelTests(_BaseModelTests):
-    def test__has_fields(self):
-        pass
+    def test__place(self):
+        pid, fi, ty, tl, tt, ur, ct, ad, la, lo = self._place()
+        p = core.models.Place.objects.get(id=pid)
+        self.assertEqual(p.feed_id, fi)
+        self.assertEqual(p.type, ty)
+        self.assertEqual(p.title, tl)
+        self.assertEqual(p.url, ur)
+        self.assertEqual(p.city.id, ct.id)
+        self.assertEqual(p.address, ad)
+        self.assertEqual(p.geo_latitude, la)
+        self.assertEqual(p.geo_longitude, lo)
 
+    def test__place_tags(self):
+        pid, _, _, _, _, _, _, _, _, _ = self._place()
+        tid, _ = self._tag()
+        p = core.models.Place.objects.get(id=pid)
+        t = core.models.Tag.objects.get(id=tid)
+        p.placetags_set.create(tag=t)
+        pt = core.models.PlaceTags.objects.get(place_id=pid, tag_id=tid)
+        self.assertEqual(pt.place.id, pid)
+        self.assertEqual(pt.tag.tag, t.tag)
 
-class ScheduleModelTests(_BaseModelTests):
-    def test__has_fields(self):
-        pass
+    def test__place_phones(self):
+        pid, _, _, _, _, _, _, _, _, _ = self._place()
+        pt = core.models.PhoneType.other
+        ph = str(uuid.uuid4())
+        p = core.models.Place.objects.get(id=pid)
+        p.placephones_set.create(type=pt, phone=ph)
+        pp = core.models.PlacePhones.objects.get(place_id=pid, type=pt)
+        self.assertEqual(pp.phone, ph)
+
+    def test__place_metros(self):
+        pid, _, _, _, _, _, _, _, _, _ = self._place()
+        ms = str(uuid.uuid4()) * 2
+        p = core.models.Place.objects.get(id=pid)
+        p.placemetros_set.create(metro=ms)
+        pm = core.models.PlaceMetros.objects.get(place_id=pid)
+        self.assertEqual(pm.metro, ms)
+
+    def test__place_work_times(self):
+        pid, _, _, _, _, _, _, _, _, _ = self._place()
+        ty = core.models.WorkTimeType.openhours
+        wt = str(uuid.uuid4()) * 3
+        p = core.models.Place.objects.get(id=pid)
+        p.placeworktimes_set.create(type=ty, work_time=wt)
+        pw = core.models.PlaceWorkTimes.objects.get(place_id=pid, type=ty)
+        self.assertEqual(pw.work_time, wt)
+
+    def test__place_images(self):
+        pid, _, _, _, _, _, _, _, _, _ = self._place()
+        im = str(uuid.uuid4()) * 5
+        p = core.models.Place.objects.get(id=pid)
+        p.placeimages_set.create(image=im)
+        pi = core.models.PlaceImages.objects.get(place_id=pid)
+        self.assertEqual(pi.image, im)
+
+    def test__place_data(self):
+        pid, _, _, _, _, _, _, _, _, _ = self._place()
+        k = str(uuid.uuid4())
+        v = str(uuid.uuid4()) * 5
+        p = core.models.Place.objects.get(id=pid)
+        p.placedata_set.create(key=k, value=v)
+        pd = core.models.PlaceData.objects.get(place_id=pid, key=k)
+        self.assertEqual(pd.key, k)
+        self.assertEqual(pd.value, v)
