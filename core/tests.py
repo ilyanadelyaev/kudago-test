@@ -26,14 +26,14 @@ class ModelTests(django.test.TestCase):
 
     @staticmethod
     def _event():
-        fi = random.randint(0, 10000)
+        ex = random.randint(0, 10000)
         ty = core.models.EventType.other
         tl = str(uuid.uuid4())
         dc = str(uuid.uuid4()) * 5
         tt = str(uuid.uuid4()) * 10
         ar = 100
         e = core.models.Event(
-            feed_id=fi,
+            ext_id=ex,
             type=ty,
             title=tl,
             description=dc,
@@ -41,7 +41,7 @@ class ModelTests(django.test.TestCase):
             age_restrictions=ar,
         )
         e.save()
-        return e.id, fi, ty, tl, dc, tt, ar
+        return e.id, ex, ty, tl, dc, tt, ar
 
     @staticmethod
     def _city():
@@ -52,7 +52,7 @@ class ModelTests(django.test.TestCase):
 
     @classmethod
     def _place(cls):
-        fi = random.randint(0, 10000)
+        ex = random.randint(0, 10000)
         ty = core.models.PlaceType.other
         tl = str(uuid.uuid4())
         tt = str(uuid.uuid4()) * 10
@@ -63,7 +63,7 @@ class ModelTests(django.test.TestCase):
         la = float(random.randrange(-90.0, 90.0))
         lo = float(random.randrange(-180.0, 180.0))
         p = core.models.Place(
-            feed_id=fi,
+            ext_id=ex,
             type=ty,
             title=tl,
             text=tt,
@@ -74,7 +74,7 @@ class ModelTests(django.test.TestCase):
             geo_longitude=lo
         )
         p.save()
-        return p.id, fi, ty, tl, tt, ur, cid, ad, la, lo
+        return p.id, ex, ty, tl, tt, ur, cid, ad, la, lo
 
     @classmethod
     def _schedule(cls):
@@ -95,9 +95,9 @@ class ModelTests(django.test.TestCase):
         self.assertEqual(t.tag, tg)
 
     def test__event(self):
-        eid, fi, ty, tl, dc, tt, ar = self._event()
+        eid, ex, ty, tl, dc, tt, ar = self._event()
         e = core.models.Event.objects.get(id=eid)
-        self.assertEqual(e.feed_id, fi)
+        self.assertEqual(e.ext_id, ex)
         self.assertEqual(e.type, ty)
         self.assertEqual(e.title, tl)
         self.assertEqual(e.description, dc)
@@ -113,16 +113,6 @@ class ModelTests(django.test.TestCase):
         et = core.models.EventTags.objects.get(event_id=eid, tag_id=tid)
         self.assertEqual(et.event_id, eid)
         self.assertEqual(et.tag.tag, t.tag)
-
-    def test__event_persons(self):
-        eid, _, _, _, _, _, _ = self._event()
-        pn = str(uuid.uuid4())
-        pr = str(uuid.uuid4())
-        e = core.models.Event.objects.get(id=eid)
-        e.eventpersons_set.create(name=pn, role=pr)
-        ep = core.models.EventPersons.objects.get(event_id=eid, name=pn)
-        self.assertEqual(ep.name, pn)
-        self.assertEqual(ep.role, pr)
 
     def test__event_images(self):
         eid, _, _, _, _, _, _ = self._event()
@@ -148,9 +138,9 @@ class ModelTests(django.test.TestCase):
         self.assertEqual(c.name, nm)
 
     def test__place(self):
-        pid, fi, ty, tl, tt, ur, cid, ad, la, lo = self._place()
+        pid, ex, ty, tl, tt, ur, cid, ad, la, lo = self._place()
         p = core.models.Place.objects.get(id=pid)
-        self.assertEqual(p.feed_id, fi)
+        self.assertEqual(p.ext_id, ex)
         self.assertEqual(p.type, ty)
         self.assertEqual(p.title, tl)
         self.assertEqual(p.url, ur)

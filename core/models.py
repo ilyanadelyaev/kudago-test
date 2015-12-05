@@ -21,7 +21,7 @@ class EventType(core.tools.enum.Enum):
 
 
 class Event(django.db.models.Model):
-    feed_id = django.db.models.PositiveIntegerField()
+    ext_id = django.db.models.PositiveIntegerField()  #TODO: index
     type = django.db.models.PositiveSmallIntegerField(
         choices=EventType())
     #
@@ -29,7 +29,7 @@ class Event(django.db.models.Model):
     description = django.db.models.TextField()
     text = django.db.models.TextField()
     #
-    age_restrictions = django.db.models.PositiveSmallIntegerField()
+    age_restrictions = django.db.models.PositiveSmallIntegerField(null=True, blank=True)
 
 
 class EventTags(django.db.models.Model):
@@ -38,12 +38,6 @@ class EventTags(django.db.models.Model):
     """
     event = django.db.models.ForeignKey(Event)
     tag = django.db.models.ForeignKey(Tag)
-
-
-class EventPersons(django.db.models.Model):
-    event = django.db.models.ForeignKey(Event)
-    name = django.db.models.CharField(max_length=50)
-    role = django.db.models.CharField(max_length=50)
 
 
 class EventImages(django.db.models.Model):
@@ -78,7 +72,7 @@ class City(django.db.models.Model):
 
 
 class Place(django.db.models.Model):
-    feed_id = django.db.models.PositiveIntegerField()
+    ext_id = django.db.models.PositiveIntegerField()  #TODO: index
     type = django.db.models.PositiveSmallIntegerField(
         choices=PlaceType())
     #
@@ -89,14 +83,13 @@ class Place(django.db.models.Model):
     #
     city = django.db.models.ForeignKey(City)
     address = django.db.models.CharField(max_length=200)
-    geo_latitude = django.db.models.FloatField()
-    geo_longitude = django.db.models.FloatField()
+    geo_latitude = django.db.models.FloatField(null=True)
+    geo_longitude = django.db.models.FloatField(null=True)
 
 
 class PlaceTags(django.db.models.Model):
     place = django.db.models.ForeignKey(Place)
     tag = django.db.models.ForeignKey(Tag)
-
 
 
 class PhoneType(core.tools.enum.Enum):
@@ -164,5 +157,5 @@ class Schedule(django.db.models.Model):
     place = django.db.models.ForeignKey(Place)
     #
     date = django.db.models.DateField()
-    start_time = django.db.models.TimeField()
-    end_time = django.db.models.TimeField()
+    start_time = django.db.models.TimeField(null=True, blank=True)
+    end_time = django.db.models.TimeField(null=True, blank=True)
