@@ -1,12 +1,12 @@
 import django.conf.urls
 
-import rssrender.views
+import aggregator.rssrender.views
 
 
 urlpatterns = [
     django.conf.urls.url(
         r'^xml/kudago/$',
-        rssrender.views.XMLRender.rss_xml_kudago,
+        aggregator.rssrender.views.XMLRender.rss_xml_kudago,
         name='rss_xml_kudago'
     ),
 ]

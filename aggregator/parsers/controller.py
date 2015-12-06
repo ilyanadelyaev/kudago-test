@@ -1,6 +1,6 @@
 import logging
 
-import parsers.kudago
+import aggregator.parsers.kudago
 
 
 logger = logging.getLogger('apps.parsers.controller')
@@ -15,7 +15,7 @@ class Controller(object):
 
     # add your parser here
     __active_parsers = (
-        parsers.kudago.Parser,
+        aggregator.parsers.kudago.Parser,
     )
 
     @classmethod

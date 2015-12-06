@@ -1,6 +1,6 @@
 import django.db.models
 
-import core.tools.enum
+import aggregator.tools.enum
 
 
 class Tag(django.db.models.Model):
@@ -16,7 +16,7 @@ class Tag(django.db.models.Model):
 ####################
 
 
-class EventType(core.tools.enum.Enum):
+class EventType(aggregator.tools.enum.Enum):
     """
     Event type enum to compact type field
     Please update manually
@@ -100,7 +100,7 @@ class EventData(django.db.models.Model):
 ####################
 
 
-class PlaceType(core.tools.enum.Enum):
+class PlaceType(aggregator.tools.enum.Enum):
     """
     Place type enum to compact type field
     Please update manually
@@ -168,7 +168,7 @@ class PlaceTags(django.db.models.Model):
             self.place.id, self.tag.tag)
 
 
-class PhoneType(core.tools.enum.Enum):
+class PhoneType(aggregator.tools.enum.Enum):
     """
     Phone type enum to compact type field
     Please update manually
@@ -209,7 +209,7 @@ class PlaceMetros(django.db.models.Model):
             self.place.id, self.metro)
 
 
-class WorkTimeType(core.tools.enum.Enum):
+class WorkTimeType(aggregator.tools.enum.Enum):
     """
     Work time type enum to compact type field
     Please update manually

@@ -13,7 +13,7 @@
         {% for tag in tag.eventtags_set.all %}
             <tr>
             <td>{{ tag.tag.id }}</td>
-            <td><a href="{% url 'www:event' tag.event.id %}">{{ tag.event.title }}</a></td>
+            <td><a href="{% url 'aggregator:www:event' tag.event.id %}">{{ tag.event.title }}</a></td>
             </tr>
         {% endfor %}
     </table>
@@ -27,7 +27,7 @@
         {% for tag in tag.placetags_set.all %}
             <tr>
             <td>{{ tag.tag.id }}</td>
-            <td><a href="{% url 'www:place' tag.place.id %}">{{ tag.place.title }}</a></td>
+            <td><a href="{% url 'aggregator:www:place' tag.place.id %}">{{ tag.place.title }}</a></td>
             </tr>
         {% endfor %}
     </table>

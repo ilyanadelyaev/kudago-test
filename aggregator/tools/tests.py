@@ -1,9 +1,9 @@
 import django.test
 
-import core.tools.enum
+import aggregator.tools.enum
 
 
-class EnumA(core.tools.enum.Enum):
+class EnumA(aggregator.tools.enum.Enum):
     a = 0
     b = 1
     c = 2

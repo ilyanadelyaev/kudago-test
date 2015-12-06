@@ -16,8 +16,8 @@
         {% for sch in schedule %}
             <tr>
             <td>{{ sch.id }}</td>
-            <td><a href="{% url 'www:event' sch.event.id %}">{{ sch.event.title }}</a></td>
-            <td><a href="{% url 'www:place' sch.place.id %}">{{ sch.place.title }}</a></td>
+            <td><a href="{% url 'aggregator:www:event' sch.event.id %}">{{ sch.event.title }}</a></td>
+            <td><a href="{% url 'aggregator:www:place' sch.place.id %}">{{ sch.place.title }}</a></td>
             <td>{{ sch.date }}</td>
             <td>{{ sch.start_time }}</td>
             <td>{{ sch.end_time }}</td>

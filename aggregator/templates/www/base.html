@@ -15,15 +15,15 @@
         <nav class="navbar navbar-default navbar-fixed-top navbar-inverse">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="{% url 'www:index' %}">Aggregator</a>
+                    <a class="navbar-brand" href="{% url 'aggregator:www:index' %}">Aggregator</a>
                 </div>
                 <div id="navbar" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="{% url 'www:events_list' %}">Events</a></li>
-                        <li><a href="{% url 'www:places_list' %}">Places</a></li>
+                        <li><a href="{% url 'aggregator:www:events_list' %}">Events</a></li>
+                        <li><a href="{% url 'aggregator:www:places_list' %}">Places</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="{% url 'www:run_parsers' %}">Parse NOW</a></li>
+                        <li><a href="{% url 'aggregator:www:run_parsers' %}">Parse NOW</a></li>
                     </ul>
                 </div>
             </div>

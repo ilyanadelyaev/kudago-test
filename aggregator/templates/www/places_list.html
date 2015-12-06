@@ -2,21 +2,21 @@
 
 {% block content %}
 
-    <h2>Events</h2>
+    <h2>Places</h2>
 
     <table id="table" class="table table-striped">
         <tr>
             <th>#</th>
             <th>Title</th>
-            <th>Description</th>
+            <th>City</th>
             <th>Type</th>
         </tr>
-        {% for ev in events %}
+        {% for pl in places %}
             <tr>
-            <td>{{ ev.id }}</td>
-            <td><a href="{% url 'www:event' ev.id %}">{{ ev.title }}</a></td>
-            <td>{{ ev.description }}</td>
-            <td>{{ ev.type_str }}</td>
+            <td>{{ pl.id }}</td>
+            <td><a href="{% url 'aggregator:www:place' pl.id %}">{{ pl.title }}</a></td>
+            <td>{{ pl.city.name }}</td>
+            <td>{{ pl.type_str }}</td>
             </tr>
         {% endfor %}
     </table>

@@ -2,14 +2,14 @@ import datetime
 import xml.etree.ElementTree
 import logging
 
-import parsers.root
-import core.models
+import aggregator.parsers.root
+import aggregator.models
 
 
 logger = logging.getLogger('apps.parsers.kudago')
 
 
-class Parser(parsers.root.ParserRoot):
+class Parser(aggregator.parsers.root.ParserRoot):
     class ParserError(RuntimeError):
         pass
 
@@ -65,7 +65,7 @@ class Parser(parsers.root.ParserRoot):
     # pylint: disable=R0912,R0914
     @classmethod
     def process_event(cls, event):
-        e = core.models.Event()
+        e = aggregator.models.Event()
         e_tags = []
         e_images = []
         e_data = []
@@ -74,14 +74,15 @@ class Parser(parsers.root.ParserRoot):
             if k == 'id':
                 # EXISTS
                 ext_id = '{}:{}'.format(cls.ID, v)
-                if core.models.Event.objects.filter(ext_id=ext_id).exists():
+                if aggregator.models.Event.objects.filter(
+                        ext_id=ext_id).exists():
                     raise cls.EventExists(
                         'event.ext_id "{}" already exists'.format(ext_id))
                 e.ext_id = ext_id
             elif k == 'type':
-                tp = core.models.EventType.get_key(v)
+                tp = aggregator.models.EventType.get_key(v)
                 if tp is None:
-                    e.type = core.models.EventType.unknown
+                    e.type = aggregator.models.EventType.unknown
                     e_data.append(('head.type', v))
                 else:
                     e.type = tp
@@ -116,7 +117,7 @@ class Parser(parsers.root.ParserRoot):
         e.save()
         #
         for tt in e_tags:
-            t, _ = core.models.Tag.objects.get_or_create(tag=tt)
+            t, _ = aggregator.models.Tag.objects.get_or_create(tag=tt)
             e.eventtags_set.create(tag=t)
         #
         for im in e_images:
@@ -128,7 +129,7 @@ class Parser(parsers.root.ParserRoot):
     # pylint: disable=R0912,R0914,R0915
     @classmethod
     def process_place(cls, place):
-        p = core.models.Place()
+        p = aggregator.models.Place()
         p_city = None
         p_tags = []
         p_phones = []
@@ -141,14 +142,15 @@ class Parser(parsers.root.ParserRoot):
             if k == 'id':
                 # EXISTS
                 ext_id = '{}:{}'.format(cls.ID, v)
-                if core.models.Place.objects.filter(ext_id=ext_id).exists():
+                if aggregator.models.Place.objects.filter(
+                        ext_id=ext_id).exists():
                     raise cls.PlaceExists(
                         'place.ext_id "{}" already exists'.format(ext_id))
                 p.ext_id = ext_id
             elif k == 'type':
-                tp = core.models.PlaceType.get_key(v)
+                tp = aggregator.models.PlaceType.get_key(v)
                 if tp is None:
-                    p.type = core.models.PlaceType.unknown
+                    p.type = aggregator.models.PlaceType.unknown
                     p_data.append(('head.type', v))
                 else:
                     p.type = tp
@@ -176,9 +178,9 @@ class Parser(parsers.root.ParserRoot):
                 for ch in el:
                     ty = ch.get('type')
                     if ty:
-                        ty = core.models.PhoneType.get_key(ty)
+                        ty = aggregator.models.PhoneType.get_key(ty)
                     if not ty:
-                        ty = core.models.PhoneType.unknown
+                        ty = aggregator.models.PhoneType.unknown
                         p_data.append(('phone.type', ch.get('type')))
                     p_phones.append((ty, ch.text))
             elif el.tag == 'metros':
@@ -188,9 +190,9 @@ class Parser(parsers.root.ParserRoot):
                 for ch in el:
                     ty = ch.get('type')
                     if ty:
-                        ty = core.models.WorkTimeType.get_key(ty)
+                        ty = aggregator.models.WorkTimeType.get_key(ty)
                     if not ty:
-                        ty = core.models.WorkTimeType.unknown
+                        ty = aggregator.models.WorkTimeType.unknown
                         p_data.append(('work_time.type', ch.get('type')))
                     p_work_times.append((ty, ch.text))
             elif el.tag == 'gallery':
@@ -202,13 +204,13 @@ class Parser(parsers.root.ParserRoot):
                 rr = cls._process_unknown_element(el)
                 p_data.extend(rr)
         #
-        ct, _ = core.models.City.objects.get_or_create(name=p_city)
+        ct, _ = aggregator.models.City.objects.get_or_create(name=p_city)
         p.city = ct
         #
         p.save()
         #
         for tt in p_tags:
-            t, _ = core.models.Tag.objects.get_or_create(tag=tt)
+            t, _ = aggregator.models.Tag.objects.get_or_create(tag=tt)
             p.placetags_set.create(tag=t)
         #
         for ty, ph in p_phones:
@@ -228,18 +230,20 @@ class Parser(parsers.root.ParserRoot):
 
     @classmethod
     def process_schedule(cls, schedule):
-        s = core.models.Schedule()
+        s = aggregator.models.Schedule()
         for k, v in schedule.items():
             if k == 'event':
                 ext_id = '{}:{}'.format(cls.ID, v)
-                e = core.models.Event.objects.filter(ext_id=ext_id).first()
+                e = aggregator.models.Event.objects.filter(
+                    ext_id=ext_id).first()
                 if not e:
                     raise cls.EventNotExists(
                         'event.ext_id "{}" not exists'.format(ext_id))
                 s.event_id = e.id
             elif k == 'place':
                 ext_id = '{}:{}'.format(cls.ID, v)
-                p = core.models.Place.objects.filter(ext_id=ext_id).first()
+                p = aggregator.models.Place.objects.filter(
+                    ext_id=ext_id).first()
                 if not p:
                     raise cls.PlaceNotExists(
                         'place.ext_id "{}" not exists'.format(ext_id))
@@ -253,7 +257,7 @@ class Parser(parsers.root.ParserRoot):
             else:
                 logger.warning(
                     'XML: Unmatched key in schedule item: "%s" = "%s"', k, v)
-        if core.models.Schedule.objects.filter(
+        if aggregator.models.Schedule.objects.filter(
                 event=s.event, place=s.place,
                 date=s.date,
                 start_time=s.start_time, end_time=s.end_time,
