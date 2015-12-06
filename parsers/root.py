@@ -55,7 +55,8 @@ class ParserRoot(object):
                 f = None
                 del f
             #
-            root = xml.etree.ElementTree.fromstring(xml_data, parser=cls.get_parser())
+            root = xml.etree.ElementTree.fromstring(
+                xml_data, parser=cls.get_parser())
             ret = cls.parse(root)  # virtual
         except Exception as ex:
             logger.error('Error on feed "{}" parse'.format(cls.URL))

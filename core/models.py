@@ -29,7 +29,8 @@ class Event(django.db.models.Model):
     description = django.db.models.TextField()
     text = django.db.models.TextField()
     #
-    age_restrictions = django.db.models.PositiveSmallIntegerField(null=True, blank=True)
+    age_restrictions = django.db.models.PositiveSmallIntegerField(
+        null=True, blank=True)
 
     def type_str(self):
         return EventType(self.type)

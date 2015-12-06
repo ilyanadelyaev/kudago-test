@@ -71,7 +71,8 @@ class Parser(parsers.root.ParserRoot):
                 # EXISTS
                 ext_id = '{}:{}'.format(cls.ID, v)
                 if core.models.Event.objects.filter(ext_id=ext_id).exists():
-                    raise cls.EventExists('event.ext_id "{}" already exists'.format(ext_id))
+                    raise cls.EventExists(
+                        'event.ext_id "{}" already exists'.format(ext_id))
                 e.ext_id = ext_id
             elif k == 'type':
                 tp = core.models.EventType.get_key(v)
@@ -120,7 +121,6 @@ class Parser(parsers.root.ParserRoot):
         for k, v in e_data:
             e.eventdata_set.create(key=k, value=v)
 
-
     @classmethod
     def process_place(cls, place):
         p = core.models.Place()
@@ -137,7 +137,8 @@ class Parser(parsers.root.ParserRoot):
                 # EXISTS
                 ext_id = '{}:{}'.format(cls.ID, v)
                 if core.models.Place.objects.filter(ext_id=ext_id).exists():
-                    raise cls.PlaceExists('place.ext_id "{}" already exists'.format(ext_id))
+                    raise cls.PlaceExists(
+                        'place.ext_id "{}" already exists'.format(ext_id))
                 p.ext_id = ext_id
             elif k == 'type':
                 tp = core.models.PlaceType.get_key(v)
@@ -228,13 +229,15 @@ class Parser(parsers.root.ParserRoot):
                 ext_id = '{}:{}'.format(cls.ID, v)
                 e = core.models.Event.objects.filter(ext_id=ext_id).first()
                 if not e:
-                    raise cls.EventNotExists('event.ext_id "{}" not exists'.format(ext_id))
+                    raise cls.EventNotExists(
+                        'event.ext_id "{}" not exists'.format(ext_id))
                 s.event_id = e.id
             elif k == 'place':
                 ext_id = '{}:{}'.format(cls.ID, v)
                 p = core.models.Place.objects.filter(ext_id=ext_id).first()
                 if not p:
-                    raise cls.PlaceNotExists('place.ext_id "{}" not exists'.format(ext_id))
+                    raise cls.PlaceNotExists(
+                        'place.ext_id "{}" not exists'.format(ext_id))
                 s.place_id = p.id
             elif k == 'date':
                 s.date = datetime.datetime.strptime(v, '%Y-%m-%d').date()
@@ -243,12 +246,15 @@ class Parser(parsers.root.ParserRoot):
             elif k == 'timetill':
                 s.end_time = datetime.datetime.strptime(v, '%H:%M').time()
             else:
-                logger.warning('XML: Unmatched key in schedule item: "{}" = "{}"'.format(k, v))
+                logger.warning(
+                    'XML: Unmatched key in schedule item: "{}" = "{}"'.format(
+                        k, v))
         if core.models.Schedule.objects.filter(
                 event=s.event, place=s.place,
                 date=s.date,
                 start_time=s.start_time, end_time=s.end_time,
         ).exists():
-            raise cls.ScheduleExists('Schedule for event "{}" and place "{}" on "{} {}" exists'.format(
-                s.event.ext_id, s.place.ext_id, s.date, s.start_time))
+            raise cls.ScheduleExists(
+                'Schedule for event "{}", place "{}" on "{} {}" exists'.format(
+                    s.event.ext_id, s.place.ext_id, s.date, s.start_time))
         s.save()

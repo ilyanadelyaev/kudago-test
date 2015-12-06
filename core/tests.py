@@ -15,7 +15,8 @@ class ModelTests(django.test.TestCase):
 
     @staticmethod
     def _random_date():
-        return datetime.date.today() + datetime.timedelta(days=random.randint(0, 100))
+        return datetime.date.today() + \
+            datetime.timedelta(days=random.randint(0, 100))
 
     @staticmethod
     def _tag():
@@ -85,7 +86,10 @@ class ModelTests(django.test.TestCase):
         dt = cls._random_date()
         st = cls._random_time()
         et = cls._random_time()
-        s = core.models.Schedule(event=e, place=p, date=dt, start_time=st, end_time=et)
+        s = core.models.Schedule(
+            event=e, place=p,
+            date=dt, start_time=st, end_time=et
+        )
         s.save()
         return s.id, eid, pid, dt, st, et
 

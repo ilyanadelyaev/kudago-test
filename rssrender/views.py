@@ -12,4 +12,5 @@ class XMLRender(object):
             cur_path = os.path.dirname(os.path.abspath(__file__))
             with open(os.path.join(cur_path, 'kudago.xml')) as f:
                 cls.__rss_xml_kudago = f.read()
-        return django.http.HttpResponse(cls.__rss_xml_kudago, content_type='application/xml')
+        return django.http.HttpResponse(
+            cls.__rss_xml_kudago, content_type='application/xml')
