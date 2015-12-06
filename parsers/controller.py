@@ -18,8 +18,8 @@ class Controller(object):
         #
         ret = {}
         for parser in cls.__active_parsers:
-            logger.info('Run parser "{}"'.format(parser.NAME))
-            ret[parser.NAME] = parser.run()
-            logger.info('Done for "{}"'.format(parser.NAME))
+            logger.info('Run parser "{}"'.format(parser.ID))
+            ret[parser.ID] = parser.run()
+            logger.info('Done for "{}"'.format(parser.ID))
 
         return ret

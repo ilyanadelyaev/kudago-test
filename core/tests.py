@@ -26,7 +26,7 @@ class ModelTests(django.test.TestCase):
 
     @staticmethod
     def _event():
-        ex = random.randint(0, 10000)
+        ex = str(uuid.uuid4())
         ty = core.models.EventType.other
         tl = str(uuid.uuid4())
         dc = str(uuid.uuid4()) * 5
@@ -52,7 +52,7 @@ class ModelTests(django.test.TestCase):
 
     @classmethod
     def _place(cls):
-        ex = random.randint(0, 10000)
+        ex = str(uuid.uuid4())
         ty = core.models.PlaceType.other
         tl = str(uuid.uuid4())
         tt = str(uuid.uuid4()) * 10

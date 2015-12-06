@@ -7,6 +7,7 @@ logger = logging.getLogger('apps.parsers.root')
 
 
 class ParserRoot(object):
+    ID = None
     URL = None
 
     @staticmethod
