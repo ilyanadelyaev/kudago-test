@@ -5,7 +5,7 @@ import xml.etree.ElementTree
 import django.test
 
 import core.models
-import logic.parsers.kudago
+import parsers.kudago
 
 
 class KudaGoParserTests(django.test.TestCase):
@@ -70,7 +70,7 @@ class KudaGoParserTests(django.test.TestCase):
         #
         root = xml.etree.ElementTree.fromstring(xml_data)
         events = root.findall('events/event')
-        logic.parsers.kudago.Parser.process_event(events[0])
+        parsers.kudago.Parser.process_event(events[0])
         #
         e = core.models.Event.objects.filter(ext_id=event_ext_id).first()
         #
@@ -100,10 +100,10 @@ class KudaGoParserTests(django.test.TestCase):
         #
         root = xml.etree.ElementTree.fromstring(xml_data)
         events = root.findall('events/event')
-        logic.parsers.kudago.Parser.process_event(events[0])
+        parsers.kudago.Parser.process_event(events[0])
         #
-        with self.assertRaises(logic.parsers.kudago.Parser.EventExists):
-            logic.parsers.kudago.Parser.process_event(events[0])
+        with self.assertRaises(parsers.kudago.Parser.EventExists):
+            parsers.kudago.Parser.process_event(events[0])
 
     def test_place(self):
         place_ext_id = abs(hash(str(uuid.uuid4())))
@@ -115,7 +115,7 @@ class KudaGoParserTests(django.test.TestCase):
         #
         root = xml.etree.ElementTree.fromstring(xml_data)
         places = root.findall('places/place')
-        logic.parsers.kudago.Parser.process_place(places[0])
+        parsers.kudago.Parser.process_place(places[0])
         #
         p = core.models.Place.objects.filter(ext_id=place_ext_id).first()
         #
@@ -161,10 +161,10 @@ class KudaGoParserTests(django.test.TestCase):
         #
         root = xml.etree.ElementTree.fromstring(xml_data)
         places = root.findall('places/place')
-        logic.parsers.kudago.Parser.process_place(places[0])
+        parsers.kudago.Parser.process_place(places[0])
         #
-        with self.assertRaises(logic.parsers.kudago.Parser.PlaceExists):
-            logic.parsers.kudago.Parser.process_place(places[0])
+        with self.assertRaises(parsers.kudago.Parser.PlaceExists):
+            parsers.kudago.Parser.process_place(places[0])
 
     def test__schedule(self):
         event_ext_id = abs(hash(str(uuid.uuid4())))
@@ -183,11 +183,11 @@ class KudaGoParserTests(django.test.TestCase):
         #
         root = xml.etree.ElementTree.fromstring(xml_data)
         events = root.findall('events/event')
-        logic.parsers.kudago.Parser.process_event(events[0])
+        parsers.kudago.Parser.process_event(events[0])
         places = root.findall('places/place')
-        logic.parsers.kudago.Parser.process_place(places[0])
+        parsers.kudago.Parser.process_place(places[0])
         sessions = root.findall('schedule/session')
-        logic.parsers.kudago.Parser.process_schedule(sessions[0])
+        parsers.kudago.Parser.process_schedule(sessions[0])
         #
         e = core.models.Event.objects.filter(ext_id=event_ext_id).first()
         p = core.models.Place.objects.filter(ext_id=place_ext_id).first()
@@ -212,11 +212,11 @@ class KudaGoParserTests(django.test.TestCase):
         #
         root = xml.etree.ElementTree.fromstring(xml_data)
         places = root.findall('places/place')
-        logic.parsers.kudago.Parser.process_place(places[0])
+        parsers.kudago.Parser.process_place(places[0])
         sessions = root.findall('schedule/session')
         #
-        with self.assertRaises(logic.parsers.kudago.Parser.EventNotExists):
-            logic.parsers.kudago.Parser.process_schedule(sessions[0])
+        with self.assertRaises(parsers.kudago.Parser.EventNotExists):
+            parsers.kudago.Parser.process_schedule(sessions[0])
 
     def test__schedule__place_not_exists(self):
         event_ext_id = abs(hash(str(uuid.uuid4())))
@@ -233,8 +233,8 @@ class KudaGoParserTests(django.test.TestCase):
         #
         root = xml.etree.ElementTree.fromstring(xml_data)
         events = root.findall('events/event')
-        logic.parsers.kudago.Parser.process_event(events[0])
+        parsers.kudago.Parser.process_event(events[0])
         sessions = root.findall('schedule/session')
         #
-        with self.assertRaises(logic.parsers.kudago.Parser.PlaceNotExists):
-            logic.parsers.kudago.Parser.process_schedule(sessions[0])
+        with self.assertRaises(parsers.kudago.Parser.PlaceNotExists):
+            parsers.kudago.Parser.process_schedule(sessions[0])

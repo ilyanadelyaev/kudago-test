@@ -2,17 +2,17 @@ import datetime
 import xml.etree.ElementTree
 import logging
 
-import logic.parser
+import parsers.root
 import core.models
 
 
-logger = logging.getLogger('apps.logic.parsers.kudago')
+logger = logging.getLogger('apps.parsers.kudago')
 
 
 URL = 'http://127.0.0.1:8000/xml/test_data'
 
 
-class Parser(logic.parser.ParserRoot):
+class Parser(parsers.root.ParserRoot):
     class EventExists(RuntimeError):
         pass
 

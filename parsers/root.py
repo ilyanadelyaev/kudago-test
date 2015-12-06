@@ -3,7 +3,7 @@ import xml.etree.ElementTree
 import logging
 
 
-logger = logging.getLogger('apps.logic.parser')
+logger = logging.getLogger('apps.parsers.root')
 
 
 class ParserRoot(object):
