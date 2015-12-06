@@ -16,9 +16,10 @@ class Controller(object):
     def run(cls):
         logger.info('Parse feeds')
         #
+        ret = {}
         for parser in cls.__active_parsers:
             logger.info('Run parser "{}"'.format(parser.NAME))
-            parser.run()
+            ret[parser.NAME] = parser.run()
             logger.info('Done for "{}"'.format(parser.NAME))
 
-        return 'ok'
+        return ret

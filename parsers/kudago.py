@@ -57,6 +57,7 @@ class Parser(parsers.root.ParserRoot):
             except Exception as ex:
                 logger.error('Cant parse schedule with "{}"'.format(str(ex)))
                 logger.exception(ex)
+        return True
 
     @classmethod
     def process_event(cls, event):
