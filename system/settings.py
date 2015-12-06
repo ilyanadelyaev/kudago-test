@@ -121,13 +121,13 @@ LOGGING = {
         'system': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': '_logs/system.log',
+            'filename': 'logs/system.log',
             'formatter': 'verbose'
         },
         'apps': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': '_logs/apps.log',
+            'filename': 'logs/apps.log',
             'formatter': 'verbose'
         },
     },
