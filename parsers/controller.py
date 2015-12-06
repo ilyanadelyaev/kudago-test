@@ -18,8 +18,8 @@ class Controller(object):
         #
         statuses = []
         for parser in cls.__active_parsers:
-            logger.info('Run parser "{}"'.format(parser.ID))
+            logger.info('Run parser "%s"', parser.ID)
             st = parser.run()
-            logger.info('Done for "{}"'.format(parser.ID))
+            logger.info('Done for "%s"', parser.ID)
             statuses.append((parser.ID, st))
         return statuses

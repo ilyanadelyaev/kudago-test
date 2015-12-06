@@ -25,7 +25,7 @@ class EventType(core.tools.enum.Enum):
     unknown = 0
     other = 1
 
-    _choices = (
+    choices = (
         (unknown, 'unknown'),
         (other, 'other'),
     )
@@ -39,7 +39,7 @@ class Event(django.db.models.Model):
     """
     ext_id = django.db.models.CharField(db_index=True, max_length=100)
     type = django.db.models.PositiveSmallIntegerField(
-        choices=EventType())
+        choices=EventType.choices)
     #
     title = django.db.models.CharField(max_length=100)
     description = django.db.models.TextField()
@@ -109,7 +109,7 @@ class PlaceType(core.tools.enum.Enum):
     unknown = 0
     other = 1
 
-    _choices = (
+    choices = (
         (unknown, 'unknown'),
         (other, 'other'),
     )
@@ -133,7 +133,7 @@ class Place(django.db.models.Model):
     """
     ext_id = django.db.models.CharField(db_index=True, max_length=100)
     type = django.db.models.PositiveSmallIntegerField(
-        choices=PlaceType())
+        choices=PlaceType.choices)
     #
     title = django.db.models.CharField(max_length=100)
     text = django.db.models.TextField()
@@ -177,7 +177,7 @@ class PhoneType(core.tools.enum.Enum):
     unknown = 0
     other = 1
 
-    _choices = (
+    choices = (
         (unknown, 'unknown'),
         (other, 'other'),
     )
@@ -189,7 +189,7 @@ class PlacePhones(django.db.models.Model):
     """
     place = django.db.models.ForeignKey(Place)
     type = django.db.models.PositiveSmallIntegerField(
-        choices=PhoneType())
+        choices=PhoneType.choices)
     phone = django.db.models.CharField(max_length=20)
 
     def __unicode__(self):
@@ -220,7 +220,7 @@ class WorkTimeType(core.tools.enum.Enum):
     openhours = 2
     kassa = 3
 
-    _choices = (
+    choices = (
         (unknown, 'unknown'),
         (other, 'other'),
         (openhours, 'openhours'),
@@ -235,7 +235,7 @@ class PlaceWorkTimes(django.db.models.Model):
     """
     place = django.db.models.ForeignKey(Place)
     type = django.db.models.PositiveSmallIntegerField(
-        choices=WorkTimeType())
+        choices=WorkTimeType.choices)
     work_time = django.db.models.CharField(max_length=50)
 
     def __unicode__(self):

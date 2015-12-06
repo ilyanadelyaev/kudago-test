@@ -8,7 +8,7 @@ class EnumA(core.tools.enum.Enum):
     b = 1
     c = 2
 
-    _choices = (
+    choices = (
         (a, 'A'),
         (b, 'B'),
         (c, 'C'),
@@ -17,20 +17,14 @@ class EnumA(core.tools.enum.Enum):
 
 class EnumTests(django.test.TestCase):
     def test__to_str__int(self):
-        value = filter(
-            lambda x: x[0] == EnumA.a,
-            EnumA()
-        )[0][1]
+        value = [x[1] for x in EnumA.choices if x[0] == EnumA.a][0]
         self.assertEqual(
             value,
             EnumA(EnumA.a)
         )
 
     def test__to_str__str(self):
-        value = filter(
-            lambda x: x[0] == EnumA.b,
-            EnumA()
-        )[0][1]
+        value = [x[1] for x in EnumA.choices if x[0] == EnumA.b][0]
         self.assertEqual(
             value,
             EnumA('1')
@@ -42,10 +36,7 @@ class EnumTests(django.test.TestCase):
         self.assertEqual(EnumA('abc'), None)
 
     def test__getitem(self):
-        value = filter(
-            lambda x: x[0] == EnumA.c,
-            EnumA()
-        )[0][1]
+        value = [x[1] for x in EnumA.choices if x[0] == EnumA.c][0]
         self.assertEqual(
             EnumA.c,
             EnumA.get_key(value)

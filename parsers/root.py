@@ -18,6 +18,8 @@ class ParserRoot(object):
         """
         return None
 
+    # virtual method, declare unused parameters
+    # pylint: disable=W0613
     @classmethod
     def parse(cls, root):
         """
@@ -38,12 +40,15 @@ class ParserRoot(object):
             ret.append(('{}.{}'.format(el.tag, k), v))
         return ret
 
+    # catch and log broadcast exception
+    # to process all parsers
+    # pylint: disable=W0703
     @classmethod
     def run(cls):
         if cls.URL is None:
             return
         #
-        logger.info('Parsing feed "{}"'.format(cls.URL))
+        logger.info('Parsing feed "%s"', cls.URL)
         try:
             try:
                 f = None
@@ -59,8 +64,8 @@ class ParserRoot(object):
                 xml_data, parser=cls.get_parser())
             ret = cls.parse(root)  # virtual
         except Exception as ex:
-            logger.error('Error on feed "{}" parse'.format(cls.URL))
+            logger.error('Error on feed "%s" parse', cls.URL)
             logger.exception(ex)
             return
-        logger.info('Feed "{}" has parsed'.format(cls.URL))
+        logger.info('Feed "%s" has parsed', cls.URL)
         return ret

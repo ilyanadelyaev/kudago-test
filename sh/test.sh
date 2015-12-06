@@ -2,7 +2,4 @@
 
 pep8 ./
 
-pylint ./core/
-pylint ./parsers/
-pylint ./rssrender/
-pylint ./www/
+pylint  --errors-only ./core/ ./parsers/ ./rssrender/ ./www/

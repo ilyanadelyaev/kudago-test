@@ -10,19 +10,22 @@ logger = logging.getLogger('apps.parsers.kudago')
 
 
 class Parser(parsers.root.ParserRoot):
-    class EventExists(RuntimeError):
+    class ParserError(RuntimeError):
         pass
 
-    class EventNotExists(RuntimeError):
+    class EventExists(ParserError):
         pass
 
-    class PlaceExists(RuntimeError):
+    class EventNotExists(ParserError):
         pass
 
-    class PlaceNotExists(RuntimeError):
+    class PlaceExists(ParserError):
         pass
 
-    class ScheduleExists(RuntimeError):
+    class PlaceNotExists(ParserError):
+        pass
+
+    class ScheduleExists(ParserError):
         pass
 
     ID = 'kudago'
@@ -38,27 +41,28 @@ class Parser(parsers.root.ParserRoot):
         for e in events:
             try:
                 cls.process_event(e)
-            except Exception as ex:
-                logger.error('Cant parse event with "{}"'.format(str(ex)))
+            except cls.ParserError as ex:
+                logger.error('Cant parse event with "%s"', str(ex))
                 logger.exception(ex)
         #
         places = root.findall('places/place')
         for p in places:
             try:
                 cls.process_place(p)
-            except Exception as ex:
-                logger.error('Cant parse place with "{}"'.format(str(ex)))
+            except cls.ParserError as ex:
+                logger.error('Cant parse place with "%s"', str(ex))
                 logger.exception(ex)
         #
         sessions = root.findall('schedule/session')
         for s in sessions:
             try:
                 cls.process_schedule(s)
-            except Exception as ex:
-                logger.error('Cant parse schedule with "{}"'.format(str(ex)))
+            except cls.ParserError as ex:
+                logger.error('Cant parse schedule with "%s"', str(ex))
                 logger.exception(ex)
         return True
 
+    # pylint: disable=R0912,R0914
     @classmethod
     def process_event(cls, event):
         e = core.models.Event()
@@ -121,6 +125,7 @@ class Parser(parsers.root.ParserRoot):
         for k, v in e_data:
             e.eventdata_set.create(key=k, value=v)
 
+    # pylint: disable=R0912,R0914,R0915
     @classmethod
     def process_place(cls, place):
         p = core.models.Place()
@@ -247,8 +252,7 @@ class Parser(parsers.root.ParserRoot):
                 s.end_time = datetime.datetime.strptime(v, '%H:%M').time()
             else:
                 logger.warning(
-                    'XML: Unmatched key in schedule item: "{}" = "{}"'.format(
-                        k, v))
+                    'XML: Unmatched key in schedule item: "%s" = "%s"', k, v)
         if core.models.Schedule.objects.filter(
                 event=s.event, place=s.place,
                 date=s.date,

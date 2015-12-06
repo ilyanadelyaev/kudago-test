@@ -147,6 +147,7 @@ class ModelTests(django.test.TestCase):
         self.assertEqual(p.ext_id, ex)
         self.assertEqual(p.type, ty)
         self.assertEqual(p.title, tl)
+        self.assertEqual(p.text, tt)
         self.assertEqual(p.url, ur)
         self.assertEqual(p.city_id, cid)
         self.assertEqual(p.address, ad)
