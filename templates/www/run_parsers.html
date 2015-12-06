@@ -1,1 +1,21 @@
+{% extends "www/base.html" %}
+
+{% block content %}
+
+    <h2>Feed parsing complete</h2>
+
+    <table id="table" class="table table-striped">
+        <tr>
+            <th>Feed</th>
+            <th>Status</th>
+        </tr>
+        {% for feed, status in statuses %}
+            <tr>
+            <td>{{ feed }}</td>
+            <td>{{ status }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}
 {{ ret }}

@@ -16,10 +16,10 @@ class Controller(object):
     def run(cls):
         logger.info('Parse feeds')
         #
-        ret = {}
+        statuses = []
         for parser in cls.__active_parsers:
             logger.info('Run parser "{}"'.format(parser.ID))
-            ret[parser.ID] = parser.run()
+            st = parser.run()
             logger.info('Done for "{}"'.format(parser.ID))
-
-        return ret
+            statuses.append((parser.ID, st))
+        return statuses
