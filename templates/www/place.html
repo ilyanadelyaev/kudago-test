@@ -24,7 +24,7 @@
 
     <p>
     {% for tag in place.placetags_set.all %}
-        <span><a href="{% url 'www:tag' tag.tag.id %}">{{ tag.tag.tag }}</a></span>
+        <span><a href="{% url 'www:tag' tag.tag.id %}">#{{ tag.tag.tag }}</a></span>
     {% endfor %}
     </p>
 
