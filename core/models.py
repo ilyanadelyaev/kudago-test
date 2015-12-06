@@ -21,7 +21,7 @@ class EventType(core.tools.enum.Enum):
 
 
 class Event(django.db.models.Model):
-    ext_id = django.db.models.CharField(max_length=100)  #TODO: index
+    ext_id = django.db.models.CharField(db_index=True, max_length=100)
     type = django.db.models.PositiveSmallIntegerField(
         choices=EventType())
     #
@@ -75,7 +75,7 @@ class City(django.db.models.Model):
 
 
 class Place(django.db.models.Model):
-    ext_id = django.db.models.CharField(max_length=100)  #TODO: index
+    ext_id = django.db.models.CharField(db_index=True, max_length=100)
     type = django.db.models.PositiveSmallIntegerField(
         choices=PlaceType())
     #
