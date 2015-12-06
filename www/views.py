@@ -12,7 +12,10 @@ def index(request):
 
 
 def events_list(request):
-    pass
+    events = core.models.Event.objects.all()
+    return django.shortcuts.render(request, 'www/events_list.html', {
+        'events': events,
+    })
 
 
 def event(request, pk):
@@ -20,7 +23,10 @@ def event(request, pk):
 
 
 def places_list(request):
-    pass
+    places = core.models.Place.objects.all()
+    return django.shortcuts.render(request, 'www/places_list.html', {
+        'places': places,
+    })
 
 
 def place(request, pk):

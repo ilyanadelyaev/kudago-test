@@ -1,0 +1,24 @@
+{% extends "www/base.html" %}
+
+{% block content %}
+
+    <h2>Places</h2>
+
+    <table id="table" class="table table-striped">
+        <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>City</th>
+            <th>Type</th>
+        </tr>
+        {% for pl in places %}
+            <tr>
+            <td>{{ pl.id }}</td>
+            <td><a href="{% url 'www:place' pl.id %}">{{ pl.title }}</a></td>
+            <td>{{ pl.city.name }}</td>
+            <td>{{ pl.type }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}
