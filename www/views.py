@@ -11,6 +11,13 @@ def index(request):
     })
 
 
+def tag(request, pk):
+    tag = core.models.Tag.objects.get(pk=pk)
+    return django.shortcuts.render(request, 'www/tag.html', {
+        'tag': tag,
+    })
+
+
 def events_list(request):
     events = core.models.Event.objects.all()
     return django.shortcuts.render(request, 'www/events_list.html', {
@@ -19,7 +26,10 @@ def events_list(request):
 
 
 def event(request, pk):
-    pass
+    event = core.models.Event.objects.get(pk=pk)
+    return django.shortcuts.render(request, 'www/event.html', {
+        'event': event,
+    })
 
 
 def places_list(request):
@@ -30,7 +40,10 @@ def places_list(request):
 
 
 def place(request, pk):
-    pass
+    place = core.models.Place.objects.get(pk=pk)
+    return django.shortcuts.render(request, 'www/place.html', {
+        'place': place,
+    })
 
 
 def run_parsers(request):

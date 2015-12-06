@@ -16,7 +16,7 @@
             <td>{{ ev.id }}</td>
             <td><a href="{% url 'www:event' ev.id %}">{{ ev.title }}</a></td>
             <td>{{ ev.description }}</td>
-            <td>{{ ev.type }}</td>
+            <td>{{ ev.type_str }}</td>
             </tr>
         {% endfor %}
     </table>

@@ -1,0 +1,36 @@
+{% extends "www/base.html" %}
+
+{% block content %}
+
+    <h2>{{ event.title }}</h2>
+
+    <h4>Type: {{ event.type_str }}</h4>
+
+    {% if event.description %}
+        <p><i>Description:{{ event.description }}</i></p>
+    {% endif %}
+
+    <p>
+    {% for tag in event.eventtags_set.all %}
+        <span><a href="{% url 'www:tag' tag.tag.id %}">{{ tag.tag.tag }}</a></span>
+    {% endfor %}
+    </p>
+
+    <p>{{ event.text }}</p>
+
+    <table id="table" class="table table-striped">
+        <tr>
+            <th>Key</th>
+            <th>Value</th>
+        </tr>
+        {% for data in event.eventdata_set.all %}
+            <tr>
+            <td>{{ data.key }}</td>
+            <td>{{ data.value }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <p><i>id: {{ event.id }} / ext_id: {{ event.ext_id }}</i></p>
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "www/base.html" %}
+
+{% block content %}
+
+    <h2>Tag: {{ tag.tag }}</h2>
+
+    <h4>Events<h4>
+    <table id="table" class="table table-striped">
+        <tr>
+            <th>#</th>
+            <th>Title</th>
+        </tr>
+        {% for tag in tag.eventtags_set.all %}
+            <tr>
+            <td>{{ tag.tag.id }}</td>
+            <td><a href="{% url 'www:event' tag.event.id %}">{{ tag.event.title }}</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <h4>Places<h4>
+    <table id="table" class="table table-striped">
+        <tr>
+            <th>#</th>
+            <th>Title</th>
+        </tr>
+        {% for tag in tag.placetags_set.all %}
+            <tr>
+            <td>{{ tag.tag.id }}</td>
+            <td><a href="{% url 'www:place' tag.place.id %}">{{ tag.place.title }}</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}
+

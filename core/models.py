@@ -31,6 +31,9 @@ class Event(django.db.models.Model):
     #
     age_restrictions = django.db.models.PositiveSmallIntegerField(null=True, blank=True)
 
+    def type_str(self):
+        return EventType(self.type)
+
 
 class EventTags(django.db.models.Model):
     """
@@ -85,6 +88,9 @@ class Place(django.db.models.Model):
     address = django.db.models.CharField(max_length=200)
     geo_latitude = django.db.models.FloatField(null=True)
     geo_longitude = django.db.models.FloatField(null=True)
+
+    def type_str(self):
+        return PlaceType(self.type)
 
 
 class PlaceTags(django.db.models.Model):

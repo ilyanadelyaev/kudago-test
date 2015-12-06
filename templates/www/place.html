@@ -1,0 +1,50 @@
+{% extends "www/base.html" %}
+
+{% block content %}
+
+    <h2>{{ place.title }}</h2>
+
+    <h4>Type: {{ place.type_str }}</h4>
+
+    <h4>{{ place.city.name }}</h4>
+
+    <p>Address: {{ place.address }}</p>
+
+    <ul>
+    {% for metro in place.placemetros_set.all %}
+        <li>{{ metro.metro }}</li>
+    {% endfor %}
+    </ul>
+
+    <ul>
+    {% for phone in place.placephones_set.all %}
+        <li>{{ phone.phone }}</li>
+    {% endfor %}
+    </ul>
+
+    <p>
+    {% for tag in place.placetags_set.all %}
+        <span><a href="{% url 'www:tag' tag.tag.id %}">{{ tag.tag.tag }}</a></span>
+    {% endfor %}
+    </p>
+
+    <p>{{ place.text }}</p>
+
+    <p><a href="{{ place.url }}" target=_blank>URL</a><p>
+
+    <table id="table" class="table table-striped">
+        <tr>
+            <th>Key</th>
+            <th>Value</th>
+        </tr>
+        {% for data in place.placedata_set.all %}
+            <tr>
+            <td>{{ ed.key }}</td>
+            <td>{{ ed.value }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <p><i>id: {{ event.id }} / ext_id: {{ event.ext_id }}</i></p>
+
+{% endblock %}

@@ -16,7 +16,7 @@
             <td>{{ pl.id }}</td>
             <td><a href="{% url 'www:place' pl.id %}">{{ pl.title }}</a></td>
             <td>{{ pl.city.name }}</td>
-            <td>{{ pl.type }}</td>
+            <td>{{ pl.type_str }}</td>
             </tr>
         {% endfor %}
     </table>

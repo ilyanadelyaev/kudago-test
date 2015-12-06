@@ -6,6 +6,7 @@ import www.views
 urlpatterns = [
     django.conf.urls.url(r'^$', www.views.index, name='index'),
 
+    django.conf.urls.url(r'^tag/(?P<pk>[0-9]+)/$', www.views.tag, name='tag'),
     django.conf.urls.url(r'^event/(?P<pk>[0-9]+)/$', www.views.event, name='event'),
     django.conf.urls.url(r'^event/$', www.views.events_list, name='events_list'),
     django.conf.urls.url(r'^place/(?P<pk>[0-9]+)/$', www.views.place, name='place'),
