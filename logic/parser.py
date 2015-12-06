@@ -1,5 +1,9 @@
 import urllib2
 import xml.etree.ElementTree
+import logging
+
+
+logger = logging.getLogger('apps.logic.parser')
 
 
 class ParserRoot(object):
@@ -45,12 +49,22 @@ class ParserRoot(object):
         if url is None:
             return
         #
+        logger.info('Parsing feed "{}"'.format(url))
         try:
-            f = urllib2.urlopen(url)
-            xml_data = f.read()
-        finally:
-            f.close()
-            f = None
-        #
-        root = xml.etree.ElementTree.fromstring(xml_data, parser=cls.get_parser())
-        return cls.parse(root)  # virtual
+            try:
+                f = None
+                f = urllib2.urlopen(url)
+                xml_data = f.read()
+            finally:
+                if f:
+                    f.close()
+                f = None
+                del f
+            #
+            root = xml.etree.ElementTree.fromstring(xml_data, parser=cls.get_parser())
+            cls.parse(root)  # virtual
+        except Exception as ex:
+            logger.error('Error on feed "{}" parse'.format(url))
+            logger.exception(ex)
+            return
+        logger.info('Feed "{}" has parsed'.format(url))

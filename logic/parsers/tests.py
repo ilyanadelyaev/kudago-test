@@ -1,3 +1,4 @@
+import uuid
 import datetime
 import xml.etree.ElementTree
 
@@ -10,7 +11,7 @@ import logic.parsers.kudago
 class KudaGoParserTests(django.test.TestCase):
     xml_events = """
     <events>
-    <event id="12345" price="true" type="doo">
+    <event id="{event}" price="true" type="doo">
       <title><![CDATA[Moo]]></title>
       <age_restricted>99+</age_restricted>
       <tags>
@@ -26,7 +27,7 @@ class KudaGoParserTests(django.test.TestCase):
 
     xml_places = """
     <places>
-    <place id="54321" type="other">
+    <place id="{place}" type="other">
       <staff>bearded man</staff>
       <city>SPB</city>
       <title>Place 16</title>
@@ -55,21 +56,23 @@ class KudaGoParserTests(django.test.TestCase):
 
     xml_schedulers = """
     <schedule>
-    <session date="2016-03-20" event="12345" place="54321" time="20:00"/>
+    <session date="2016-03-20" event="{event}" place="{place}" time="20:00"/>
     </schedule>
     """
 
     def test__event(self):
+        event_ext_id = abs(hash(str(uuid.uuid4())))
         xml_data = """<?xml version="1.0" encoding="utf8"?>
         <feed version="1.1">
         {}
         </feed>
-        """.format(self.xml_events)
+        """.format(self.xml_events.format(event=event_ext_id))
+        #
         root = xml.etree.ElementTree.fromstring(xml_data)
         events = root.findall('events/event')
         logic.parsers.kudago.Parser.process_event(events[0])
         #
-        e = core.models.Event.objects.filter(ext_id=12345).first()
+        e = core.models.Event.objects.filter(ext_id=event_ext_id).first()
         #
         self.assertEqual(e.type, core.models.EventType.unknown)
         self.assertEqual(e.title, 'Moo')
@@ -87,17 +90,34 @@ class KudaGoParserTests(django.test.TestCase):
         ed = e.eventdata_set.filter(key='head.price').first()
         self.assertEqual(ed.value, 'true')
 
-    def test_place(self):
+    def test__event__exists(self):
+        event_ext_id = abs(hash(str(uuid.uuid4())))
         xml_data = """<?xml version="1.0" encoding="utf8"?>
         <feed version="1.1">
         {}
         </feed>
-        """.format(self.xml_places)
+        """.format(self.xml_events.format(event=event_ext_id))
+        #
+        root = xml.etree.ElementTree.fromstring(xml_data)
+        events = root.findall('events/event')
+        logic.parsers.kudago.Parser.process_event(events[0])
+        #
+        with self.assertRaises(logic.parsers.kudago.Parser.EventExists):
+            logic.parsers.kudago.Parser.process_event(events[0])
+
+    def test_place(self):
+        place_ext_id = abs(hash(str(uuid.uuid4())))
+        xml_data = """<?xml version="1.0" encoding="utf8"?>
+        <feed version="1.1">
+        {}
+        </feed>
+        """.format(self.xml_places.format(place=place_ext_id))
+        #
         root = xml.etree.ElementTree.fromstring(xml_data)
         places = root.findall('places/place')
         logic.parsers.kudago.Parser.process_place(places[0])
         #
-        p = core.models.Place.objects.filter(ext_id=54321).first()
+        p = core.models.Place.objects.filter(ext_id=place_ext_id).first()
         #
         self.assertEqual(p.type, core.models.PlaceType.other)
         self.assertEqual(p.title, 'Place 16')
@@ -131,14 +151,36 @@ class KudaGoParserTests(django.test.TestCase):
         self.assertEqual(pd.key, 'staff')
         self.assertEqual(pd.value, 'bearded man')
 
+    def test__place__exists(self):
+        place_ext_id = abs(hash(str(uuid.uuid4())))
+        xml_data = """<?xml version="1.0" encoding="utf8"?>
+        <feed version="1.1">
+        {}
+        </feed>
+        """.format(self.xml_places.format(place=place_ext_id))
+        #
+        root = xml.etree.ElementTree.fromstring(xml_data)
+        places = root.findall('places/place')
+        logic.parsers.kudago.Parser.process_place(places[0])
+        #
+        with self.assertRaises(logic.parsers.kudago.Parser.PlaceExists):
+            logic.parsers.kudago.Parser.process_place(places[0])
+
     def test__schedule(self):
+        event_ext_id = abs(hash(str(uuid.uuid4())))
+        place_ext_id = abs(hash(str(uuid.uuid4())))
         xml_data = """<?xml version="1.0" encoding="utf8"?>
         <feed version="1.1">
         {}
         {}
         {}
         </feed>
-        """.format(self.xml_events, self.xml_places, self.xml_schedulers)
+        """.format(
+            self.xml_events.format(event=event_ext_id),
+            self.xml_places.format(place=place_ext_id),
+            self.xml_schedulers.format(event=event_ext_id, place=place_ext_id)
+        )
+        #
         root = xml.etree.ElementTree.fromstring(xml_data)
         events = root.findall('events/event')
         logic.parsers.kudago.Parser.process_event(events[0])
@@ -147,10 +189,52 @@ class KudaGoParserTests(django.test.TestCase):
         sessions = root.findall('schedule/session')
         logic.parsers.kudago.Parser.process_schedule(sessions[0])
         #
-        e = core.models.Event.objects.filter(ext_id=12345).first()
-        p = core.models.Place.objects.filter(ext_id=54321).first()
+        e = core.models.Event.objects.filter(ext_id=event_ext_id).first()
+        p = core.models.Place.objects.filter(ext_id=place_ext_id).first()
         s = core.models.Schedule.objects.filter(event_id=e.id, place_id=p.id).first()
         #
         self.assertEqual(s.date, datetime.date(2016, 3, 20))
         self.assertEqual(s.start_time, datetime.time(20, 0))
         self.assertEqual(s.end_time, None)
+
+    def test__schedule__event_not_exists(self):
+        event_ext_id = 0
+        place_ext_id = 0
+        xml_data = """<?xml version="1.0" encoding="utf8"?>
+        <feed version="1.1">
+        {}
+        {}
+        </feed>
+        """.format(
+            self.xml_places.format(place=place_ext_id),
+            self.xml_schedulers.format(event=event_ext_id, place=place_ext_id)
+        )
+        #
+        root = xml.etree.ElementTree.fromstring(xml_data)
+        places = root.findall('places/place')
+        logic.parsers.kudago.Parser.process_place(places[0])
+        sessions = root.findall('schedule/session')
+        #
+        with self.assertRaises(logic.parsers.kudago.Parser.EventNotExists):
+            logic.parsers.kudago.Parser.process_schedule(sessions[0])
+
+    def test__schedule__place_not_exists(self):
+        event_ext_id = abs(hash(str(uuid.uuid4())))
+        place_ext_id = 0
+        xml_data = """<?xml version="1.0" encoding="utf8"?>
+        <feed version="1.1">
+        {}
+        {}
+        </feed>
+        """.format(
+            self.xml_events.format(event=event_ext_id),
+            self.xml_schedulers.format(event=event_ext_id, place=place_ext_id)
+        )
+        #
+        root = xml.etree.ElementTree.fromstring(xml_data)
+        events = root.findall('events/event')
+        logic.parsers.kudago.Parser.process_event(events[0])
+        sessions = root.findall('schedule/session')
+        #
+        with self.assertRaises(logic.parsers.kudago.Parser.PlaceNotExists):
+            logic.parsers.kudago.Parser.process_schedule(sessions[0])

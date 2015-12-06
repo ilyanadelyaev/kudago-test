@@ -13,6 +13,18 @@ URL = 'http://127.0.0.1:8000/xml/test_data'
 
 
 class Parser(logic.parser.ParserRoot):
+    class EventExists(RuntimeError):
+        pass
+
+    class EventNotExists(RuntimeError):
+        pass
+
+    class PlaceExists(RuntimeError):
+        pass
+
+    class PlaceNotExists(RuntimeError):
+        pass
+
     @staticmethod
     def get_url():
         return URL
@@ -28,18 +40,23 @@ class Parser(logic.parser.ParserRoot):
             try:
                 cls.process_event(e)
             except Exception as ex:
+                logger.error('Cant parse event with "{}"'.format(str(ex)))
                 logger.exception(ex)
+        #
         places = root.findall('places/place')
         for p in places:
             try:
                 cls.process_place(p)
             except Exception as ex:
+                logger.error('Cant parse place with "{}"'.format(str(ex)))
                 logger.exception(ex)
+        #
         sessions = root.findall('schedule/session')
         for s in sessions:
             try:
                 cls.process_schedule(s)
             except Exception as ex:
+                logger.error('Cant parse schedule with "{}"'.format(str(ex)))
                 logger.exception(ex)
 
     @classmethod
@@ -53,7 +70,7 @@ class Parser(logic.parser.ParserRoot):
             if k == 'id':
                 # EXISTS
                 if core.models.Event.objects.filter(ext_id=v).first():
-                    return
+                    raise cls.EventExists('event.ext_id "{}" already exists'.format(v))
                 e.ext_id = v
             elif k == 'type':
                 tp = core.models.EventType.get_key(v)
@@ -121,7 +138,7 @@ class Parser(logic.parser.ParserRoot):
             if k == 'id':
                 # EXISTS
                 if core.models.Place.objects.filter(ext_id=v).first():
-                    return
+                    raise cls.PlaceExists('place.ext_id "{}" already exists'.format(v))
                 p.ext_id = v
             elif k == 'type':
                 tp = core.models.PlaceType.get_key(v)
@@ -210,19 +227,19 @@ class Parser(logic.parser.ParserRoot):
         for k, v in p_data:
             p.placedata_set.create(key=k, value=v)
 
-    @staticmethod
-    def process_schedule(schedule):
+    @classmethod
+    def process_schedule(cls, schedule):
         s = core.models.Schedule()
         for k, v in schedule.items():
             if k == 'event':
                 e = core.models.Event.objects.filter(ext_id=v).first()
                 if not e:
-                    return
+                    raise cls.EventNotExists('event.ext_id "{}" not exists'.format(v))
                 s.event_id = e.id
             elif k == 'place':
                 p = core.models.Place.objects.filter(ext_id=v).first()
                 if not p:
-                    return
+                    raise cls.PlaceNotExists('place.ext_id "{}" not exists'.format(v))
                 s.place_id = p.id
             elif k == 'date':
                 s.date = datetime.datetime.strptime(v, '%Y-%m-%d').date()
