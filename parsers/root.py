@@ -7,6 +7,18 @@ logger = logging.getLogger('apps.parsers.root')
 
 
 class ParserRoot(object):
+    """
+    Base class for all parsers
+    Read url and make XML root from it
+
+    Overwrite "parse" method in childs
+
+    To setup specific xml.etree.parser overwrite "get_parser"
+
+    Logging some steps
+    Catching exceptions here
+    """
+
     ID = None
     URL = None
 
@@ -15,6 +27,7 @@ class ParserRoot(object):
         """
         * virtual
         special parser for xml
+        return xml.etree.ElementTree.XMLParser
         """
         return None
 

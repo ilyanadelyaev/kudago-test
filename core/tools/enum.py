@@ -1,4 +1,9 @@
 class _EnumMeta(type):
+    """
+    Meta class for enum
+    Store magic here
+    """
+
     def __init__(cls, name, bases, dct):
         super(_EnumMeta, cls).__init__(name, bases, dct)
         cls._choices_keys = dict(cls.__dict__['choices']) \
@@ -18,6 +23,16 @@ class _EnumMeta(type):
 
 
 class Enum(object):
+    """
+    Inherit your enum class from this base
+
+    Declare constants like:
+    unknown = 1
+
+    Declare iter:
+    choices = ((unknown, 'unknown'))
+    """
+
     __metaclass__ = _EnumMeta
 
     @classmethod

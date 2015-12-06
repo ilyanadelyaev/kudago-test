@@ -7,6 +7,12 @@ logger = logging.getLogger('apps.parsers.controller')
 
 
 class Controller(object):
+    """
+    Store and run your parsers from here
+
+    See logs/apps.log after processing to catch errors and unknowns
+    """
+
     # add your parser here
     __active_parsers = (
         parsers.kudago.Parser,

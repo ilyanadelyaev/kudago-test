@@ -8,6 +8,9 @@ class XMLRender(object):
 
     @classmethod
     def rss_xml_kudago(cls, _):
+        """
+        Fake feed to test KUDAGO parser
+        """
         if cls.__rss_xml_kudago is None:
             cur_path = os.path.dirname(os.path.abspath(__file__))
             with open(os.path.join(cur_path, 'kudago.xml')) as f:
