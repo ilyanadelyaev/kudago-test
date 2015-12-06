@@ -1,0 +1,19 @@
+[MASTER]
+load-plugins=pylint_django
+
+msg-template={path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'
+
+
+[BASIC]
+bad-functions=map,input
+
+
+[MESSAGES CONTROL]
+# C0103 Invalid name
+# C0111 Missing docstring
+# R0903 Too few public methods
+disable=C0103,C0111,R0903
+
+
+[TYPECHECK]
+generated-members=save,objects,id,[a-zA-Z]+_set,_choices_keys,get_key
