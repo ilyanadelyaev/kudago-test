@@ -7,13 +7,7 @@ logger = logging.getLogger('apps.parsers.root')
 
 
 class ParserRoot(object):
-    @staticmethod
-    def get_url():
-        """
-        * virtual
-        url to read
-        """
-        return None
+    URL = None
 
     @staticmethod
     def get_parser():
@@ -45,15 +39,14 @@ class ParserRoot(object):
 
     @classmethod
     def run(cls):
-        url = cls.get_url()
-        if url is None:
+        if cls.URL is None:
             return
         #
-        logger.info('Parsing feed "{}"'.format(url))
+        logger.info('Parsing feed "{}"'.format(cls.URL))
         try:
             try:
                 f = None
-                f = urllib2.urlopen(url)
+                f = urllib2.urlopen(cls.URL)
                 xml_data = f.read()
             finally:
                 if f:
@@ -64,7 +57,7 @@ class ParserRoot(object):
             root = xml.etree.ElementTree.fromstring(xml_data, parser=cls.get_parser())
             cls.parse(root)  # virtual
         except Exception as ex:
-            logger.error('Error on feed "{}" parse'.format(url))
+            logger.error('Error on feed "{}" parse'.format(cls.URL))
             logger.exception(ex)
             return
-        logger.info('Feed "{}" has parsed'.format(url))
+        logger.info('Feed "{}" has parsed'.format(cls.URL))

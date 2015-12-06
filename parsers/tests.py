@@ -238,3 +238,29 @@ class KudaGoParserTests(django.test.TestCase):
         #
         with self.assertRaises(parsers.kudago.Parser.PlaceNotExists):
             parsers.kudago.Parser.process_schedule(sessions[0])
+
+    def test__schedule__exists(self):
+        event_ext_id = abs(hash(str(uuid.uuid4())))
+        place_ext_id = abs(hash(str(uuid.uuid4())))
+        xml_data = """<?xml version="1.0" encoding="utf8"?>
+        <feed version="1.1">
+        {}
+        {}
+        {}
+        </feed>
+        """.format(
+            self.xml_events.format(event=event_ext_id),
+            self.xml_places.format(place=place_ext_id),
+            self.xml_schedulers.format(event=event_ext_id, place=place_ext_id)
+        )
+        #
+        root = xml.etree.ElementTree.fromstring(xml_data)
+        events = root.findall('events/event')
+        parsers.kudago.Parser.process_event(events[0])
+        places = root.findall('places/place')
+        parsers.kudago.Parser.process_place(places[0])
+        sessions = root.findall('schedule/session')
+        parsers.kudago.Parser.process_schedule(sessions[0])
+        #
+        with self.assertRaises(parsers.kudago.Parser.ScheduleExists):
+            parsers.kudago.Parser.process_schedule(sessions[0])

@@ -9,9 +9,6 @@ import core.models
 logger = logging.getLogger('apps.parsers.kudago')
 
 
-URL = 'http://127.0.0.1:8000/xml/test_data'
-
-
 class Parser(parsers.root.ParserRoot):
     class EventExists(RuntimeError):
         pass
@@ -25,9 +22,11 @@ class Parser(parsers.root.ParserRoot):
     class PlaceNotExists(RuntimeError):
         pass
 
-    @staticmethod
-    def get_url():
-        return URL
+    class ScheduleExists(RuntimeError):
+        pass
+
+    NAME = 'kudago'
+    URL = 'http://127.0.0.1:8000/rss/xml/kudago'
 
     @staticmethod
     def get_parser():
@@ -249,4 +248,12 @@ class Parser(parsers.root.ParserRoot):
                 s.end_time = datetime.datetime.strptime(v, '%H:%M').time()
             else:
                 logger.warning('XML: Unmatched key in schedule item: "{}" = "{}"'.format(k, v))
+        ss = core.models.Schedule.objects.filter(
+            event=s.event, place=s.place,
+            date=s.date,
+            start_time=s.start_time, end_time=s.end_time,
+        ).first()
+        if ss:
+            raise cls.ScheduleExists('Schedule for event "{}" and place "{}" on "{} {}" exists'.format(
+                s.event.id, s.place.id, s.date, s.start_time))
         s.save()
