@@ -1,1 +1,28 @@
-None
+{% extends "www/base.html" %}
+
+{% block content %}
+
+    <h2>Schedule</h2>
+
+    <table id="table" class="table table-striped">
+        <tr>
+            <th>#</th>
+            <th>Event</th>
+            <th>Place</th>
+            <th>Date</th>
+            <th>Start time</th>
+            <th>End time</th>
+        </tr>
+        {% for sch in schedule %}
+            <tr>
+            <td>{{ sch.id }}</td>
+            <td><a href="{% url 'www:event' sch.event.id %}">{{ sch.event.title }}</a></td>
+            <td><a href="{% url 'www:place' sch.place.id %}">{{ sch.place.title }}</a></td>
+            <td>{{ sch.date }}</td>
+            <td>{{ sch.start_time }}</td>
+            <td>{{ sch.end_time }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}
