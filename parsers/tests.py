@@ -73,7 +73,7 @@ class KudaGoParserTests(django.test.TestCase):
         parsers.kudago.Parser.process_event(events[0])
         #
         ext_id = '{}:{}'.format(parsers.kudago.Parser.ID, event_ext_id)
-        e = core.models.Event.objects.filter(ext_id=ext_id).first()
+        e = core.models.Event.objects.get(ext_id=ext_id)
         #
         self.assertEqual(e.type, core.models.EventType.unknown)
         self.assertEqual(e.title, 'Moo')
@@ -81,14 +81,14 @@ class KudaGoParserTests(django.test.TestCase):
         self.assertEqual(e.text, 'loo')
         self.assertEqual(e.age_restrictions, 99)
         #
-        t = core.models.Tag.objects.filter(tag='foo').first()
-        et = e.eventtags_set.filter(tag_id=t.id).first()
+        t = core.models.Tag.objects.get(tag='foo')
+        et = e.eventtags_set.get(tag_id=t.id)
         self.assertEqual(et.tag.tag, 'foo')
         #
-        ei = e.eventimages_set.filter(image='boo.png').first()
+        ei = e.eventimages_set.get(image='boo.png')
         self.assertEqual(ei.event.id, e.id)
         #
-        ed = e.eventdata_set.filter(key='head.price').first()
+        ed = e.eventdata_set.get(key='head.price')
         self.assertEqual(ed.value, 'true')
 
     def test__event__exists(self):
@@ -119,7 +119,7 @@ class KudaGoParserTests(django.test.TestCase):
         parsers.kudago.Parser.process_place(places[0])
         #
         ext_id = '{}:{}'.format(parsers.kudago.Parser.ID, place_ext_id)
-        p = core.models.Place.objects.filter(ext_id=ext_id).first()
+        p = core.models.Place.objects.get(ext_id=ext_id)
         #
         self.assertEqual(p.type, core.models.PlaceType.other)
         self.assertEqual(p.title, 'Place 16')
@@ -129,14 +129,14 @@ class KudaGoParserTests(django.test.TestCase):
         self.assertEqual(p.geo_latitude, 59.9)
         self.assertEqual(p.geo_longitude, 30.3)
         #
-        city = core.models.City.objects.filter(name='SPB').first()
+        city = core.models.City.objects.get(name='SPB')
         self.assertEqual(p.city_id, city.id)
         #
-        t = core.models.Tag.objects.filter(tag='Ship').first()
-        pt = p.placetags_set.filter(tag_id=t.id).first()
+        t = core.models.Tag.objects.get(tag='Ship')
+        pt = p.placetags_set.get(tag_id=t.id)
         self.assertEqual(pt.tag.tag, 'Ship')
         #
-        pp = p.placephones_set.filter(type=core.models.PhoneType.other).first()
+        pp = p.placephones_set.get(type=core.models.PhoneType.other)
         self.assertEqual(pp.phone, '+7 812 495-68-48')
         #
         pm = p.placemetros_set.filter().first()
@@ -192,10 +192,10 @@ class KudaGoParserTests(django.test.TestCase):
         parsers.kudago.Parser.process_schedule(sessions[0])
         #
         ext_id = '{}:{}'.format(parsers.kudago.Parser.ID, event_ext_id)
-        e = core.models.Event.objects.filter(ext_id=ext_id).first()
+        e = core.models.Event.objects.get(ext_id=ext_id)
         ext_id = '{}:{}'.format(parsers.kudago.Parser.ID, place_ext_id)
-        p = core.models.Place.objects.filter(ext_id=ext_id).first()
-        s = core.models.Schedule.objects.filter(event_id=e.id, place_id=p.id).first()
+        p = core.models.Place.objects.get(ext_id=ext_id)
+        s = core.models.Schedule.objects.get(event_id=e.id, place_id=p.id)
         #
         self.assertEqual(s.date, datetime.date(2016, 3, 20))
         self.assertEqual(s.start_time, datetime.time(20, 0))

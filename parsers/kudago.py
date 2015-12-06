@@ -70,7 +70,7 @@ class Parser(parsers.root.ParserRoot):
             if k == 'id':
                 # EXISTS
                 ext_id = '{}:{}'.format(cls.ID, v)
-                if core.models.Event.objects.filter(ext_id=ext_id).first():
+                if core.models.Event.objects.filter(ext_id=ext_id).exists():
                     raise cls.EventExists('event.ext_id "{}" already exists'.format(ext_id))
                 e.ext_id = ext_id
             elif k == 'type':
@@ -111,10 +111,7 @@ class Parser(parsers.root.ParserRoot):
         e.save()
         #
         for tt in e_tags:
-            t = core.models.Tag.objects.filter(tag=tt).first()
-            if t is None:
-                t = core.models.Tag(tag=tt)
-                t.save()
+            t, _ = core.models.Tag.objects.get_or_create(tag=tt)
             e.eventtags_set.create(tag=t)
         #
         for im in e_images:
@@ -139,7 +136,7 @@ class Parser(parsers.root.ParserRoot):
             if k == 'id':
                 # EXISTS
                 ext_id = '{}:{}'.format(cls.ID, v)
-                if core.models.Place.objects.filter(ext_id=ext_id).first():
+                if core.models.Place.objects.filter(ext_id=ext_id).exists():
                     raise cls.PlaceExists('place.ext_id "{}" already exists'.format(ext_id))
                 p.ext_id = ext_id
             elif k == 'type':
@@ -199,19 +196,13 @@ class Parser(parsers.root.ParserRoot):
                 rr = cls._process_unknown_element(el)
                 p_data.extend(rr)
         #
-        ct = core.models.City.objects.filter(name=p_city).first()
-        if not ct:
-            ct = core.models.City(name=p_city)
-            ct.save()
+        ct, _ = core.models.City.objects.get_or_create(name=p_city)
         p.city = ct
         #
         p.save()
         #
         for tt in p_tags:
-            t = core.models.Tag.objects.filter(tag=tt).first()
-            if t is None:
-                t = core.models.Tag(tag=tt)
-                t.save()
+            t, _ = core.models.Tag.objects.get_or_create(tag=tt)
             p.placetags_set.create(tag=t)
         #
         for ty, ph in p_phones:
@@ -253,12 +244,11 @@ class Parser(parsers.root.ParserRoot):
                 s.end_time = datetime.datetime.strptime(v, '%H:%M').time()
             else:
                 logger.warning('XML: Unmatched key in schedule item: "{}" = "{}"'.format(k, v))
-        ss = core.models.Schedule.objects.filter(
-            event=s.event, place=s.place,
-            date=s.date,
-            start_time=s.start_time, end_time=s.end_time,
-        ).first()
-        if ss:
+        if core.models.Schedule.objects.filter(
+                event=s.event, place=s.place,
+                date=s.date,
+                start_time=s.start_time, end_time=s.end_time,
+        ).exists():
             raise cls.ScheduleExists('Schedule for event "{}" and place "{}" on "{} {}" exists'.format(
                 s.event.ext_id, s.place.ext_id, s.date, s.start_time))
         s.save()
