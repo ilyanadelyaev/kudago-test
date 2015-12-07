@@ -10,6 +10,7 @@ class XMLRender(object):
     def xml_kudago(cls, _):
         """
         Fake feed to test KUDAGO parser
+        Read data file once
         """
         if cls.__xml_kudago is None:
             cur_path = os.path.dirname(os.path.abspath(__file__))

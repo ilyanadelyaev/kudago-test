@@ -20,6 +20,10 @@ class Controller(object):
 
     @classmethod
     def run(cls):
+        """
+        Call parsers from cls.__active_parsers list one by one
+        Collect statuses
+        """
         logger.info('Parse feeds')
         #
         statuses = []

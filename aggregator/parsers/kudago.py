@@ -33,10 +33,17 @@ class Parser(aggregator.parsers.root.XMLParserRoot):
 
     @staticmethod
     def get_parser():
+        # add specific XML parser for utf-8 source data
         return xml.etree.ElementTree.XMLParser(encoding='utf-8')
 
     @classmethod
     def parse(cls, root):
+        """
+        Process nodes:
+        - Events - self.process_event()
+        - Places - self.process_place()
+        - Sessions - self.process_schedule()
+        """
         logger.info('Process events')
         events = root.findall('events/event')
         events_counter = 0
@@ -141,6 +148,7 @@ class Parser(aggregator.parsers.root.XMLParserRoot):
         #
         for k, v in e_data:
             e.eventdata_set.create(key=k, value=v)
+        #
         logger.debug('Event "%s" has added', e.ext_id)
 
     # pylint: disable=R0912,R0914,R0915
@@ -244,6 +252,7 @@ class Parser(aggregator.parsers.root.XMLParserRoot):
         #
         for k, v in p_data:
             p.placedata_set.create(key=k, value=v)
+        #
         logger.debug('Place "%s" has added', p.ext_id)
 
     @classmethod
@@ -275,6 +284,7 @@ class Parser(aggregator.parsers.root.XMLParserRoot):
             else:
                 logger.warning(
                     'XML: Unmatched key in schedule item: "%s" = "%s"', k, v)
+        # EXISTS
         if aggregator.models.Schedule.objects.filter(
                 event=s.event, place=s.place,
                 date=s.date,
@@ -284,6 +294,7 @@ class Parser(aggregator.parsers.root.XMLParserRoot):
                 'Schedule for event "{}", place "{}" on "{} {}" exists'.format(
                     s.event.ext_id, s.place.ext_id, s.date, s.start_time))
         s.save()
+        #
         logger.debug(
             'Schedule "%s" : "%s" : "%s" has added',
             s.event.ext_id, s.place.ext_id, s.date)

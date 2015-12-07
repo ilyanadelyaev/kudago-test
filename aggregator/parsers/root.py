@@ -19,8 +19,8 @@ class XMLParserRoot(object):
     Catching exceptions here
     """
 
-    ID = None
-    URL = None
+    ID = None  # internal identity string - overwrite it
+    URL = None  # url to fetch data - overwrite it
 
     @staticmethod
     def get_parser():
@@ -43,6 +43,9 @@ class XMLParserRoot(object):
 
     @classmethod
     def _process_unknown_element(cls, el):
+        """
+        deeply read XML element and return keys and text via list
+        """
         ret = []
         if el.text.strip():
             ret.append((el.tag, el.text))
@@ -58,6 +61,11 @@ class XMLParserRoot(object):
     # pylint: disable=W0703
     @classmethod
     def run(cls):
+        """
+        - Read self.URL
+        - Get XML.root from feed
+        - Get data from root via self.parse()
+        """
         if cls.URL is None:
             return
         #
