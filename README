@@ -18,3 +18,6 @@ sudo pip install pylint
 
 Run
 ./sh/run.sh
+
+Build package
+./sh/build.sh
