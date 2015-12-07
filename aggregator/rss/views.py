@@ -13,8 +13,9 @@ class XMLRender(object):
         Read data file once
         """
         if cls.__xml_kudago is None:
-            cur_path = os.path.dirname(os.path.abspath(__file__))
-            with open(os.path.join(cur_path, 'kudago.xml')) as f:
+            cur_path = os.path.dirname(
+                os.path.dirname(os.path.abspath(__file__)))
+            with open(os.path.join(cur_path, 'static', 'kudago.xml')) as f:
                 cls.__xml_kudago = f.read()
         return django.http.HttpResponse(
             cls.__xml_kudago, content_type='application/xml')
