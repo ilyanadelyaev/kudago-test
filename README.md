@@ -1,23 +1,34 @@
-Test project on Django framework
+# Aggregator
+## Test project on Django framework
 
 Parse rss feed and fill tables in DB
 Draw models via static pages
 
-Click "Parse NOW" on top-right to parse feeds and fill database
+** CliIck "Parse NOW" on top-right to parse feeds and fill database **
 
-Initialize
+## Initialize
+```
 ./sh/init.sh
+```
 
-Clear
+## Clear
+```
 ./sh/cleanup.sh
+```
 
-Tests
+## Tests
+```
 sudo pip install pep8
 sudo pip install pylint
 ./sh/tests.sh
+```
 
-Run
+## Run
+```
 ./sh/run.sh
+```
 
-Build package
+## Build package
+```
 ./sh/build.sh
+```
