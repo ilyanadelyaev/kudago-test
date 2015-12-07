@@ -3,12 +3,12 @@ import xml.etree.ElementTree
 import logging
 
 
-logger = logging.getLogger('apps.parsers.root')
+logger = logging.getLogger('aggregator.parsers.root')
 
 
-class ParserRoot(object):
+class XMLParserRoot(object):
     """
-    Base class for all parsers
+    Base class for XML parsers
     Read url and make XML root from it
 
     Overwrite "parse" method in childs

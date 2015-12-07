@@ -123,10 +123,10 @@ LOGGING = {
             'filename': 'logs/system.log',
             'formatter': 'verbose'
         },
-        'apps': {
+        'aggregator': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': 'logs/apps.log',
+            'filename': 'logs/aggregator.log',
             'formatter': 'verbose'
         },
     },
@@ -136,8 +136,8 @@ LOGGING = {
             'propagate': True,
             'level': 'DEBUG',
         },
-        'apps': {
-            'handlers': ['apps'],
+        'aggregator': {
+            'handlers': ['aggregator'],
             'level': 'DEBUG',
         },
     }

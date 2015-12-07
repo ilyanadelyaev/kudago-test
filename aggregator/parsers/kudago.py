@@ -6,10 +6,10 @@ import aggregator.parsers.root
 import aggregator.models
 
 
-logger = logging.getLogger('apps.parsers.kudago')
+logger = logging.getLogger('aggregator.parsers.kudago')
 
 
-class Parser(aggregator.parsers.root.ParserRoot):
+class Parser(aggregator.parsers.root.XMLParserRoot):
     class ParserError(RuntimeError):
         pass
 
@@ -37,30 +37,46 @@ class Parser(aggregator.parsers.root.ParserRoot):
 
     @classmethod
     def parse(cls, root):
+        logger.info('Process events')
         events = root.findall('events/event')
+        events_counter = 0
         for e in events:
             try:
                 cls.process_event(e)
+                events_counter += 1
             except cls.ParserError as ex:
                 logger.error('Cant parse event with "%s"', str(ex))
                 logger.exception(ex)
+        logger.info('Process events')
         #
+        logger.info('Process places')
         places = root.findall('places/place')
+        places_counter = 0
         for p in places:
             try:
                 cls.process_place(p)
+                places_counter += 1
             except cls.ParserError as ex:
                 logger.error('Cant parse place with "%s"', str(ex))
                 logger.exception(ex)
+        logger.info('Places done')
         #
+        logger.info('Process schedule')
         sessions = root.findall('schedule/session')
+        sessions_counter = 0
         for s in sessions:
             try:
                 cls.process_schedule(s)
+                sessions_counter += 1
             except cls.ParserError as ex:
                 logger.error('Cant parse schedule with "%s"', str(ex))
                 logger.exception(ex)
-        return True
+        logger.info('Schedule done')
+        return {
+            'events_counter': events_counter,
+            'places_counter': places_counter,
+            'sessions_counter': sessions_counter,
+        }
 
     # pylint: disable=R0912,R0914
     @classmethod
@@ -125,6 +141,7 @@ class Parser(aggregator.parsers.root.ParserRoot):
         #
         for k, v in e_data:
             e.eventdata_set.create(key=k, value=v)
+        logger.debug('Event "%s" has added', e.ext_id)
 
     # pylint: disable=R0912,R0914,R0915
     @classmethod
@@ -227,6 +244,7 @@ class Parser(aggregator.parsers.root.ParserRoot):
         #
         for k, v in p_data:
             p.placedata_set.create(key=k, value=v)
+        logger.debug('Place "%s" has added', p.ext_id)
 
     @classmethod
     def process_schedule(cls, schedule):
@@ -266,3 +284,6 @@ class Parser(aggregator.parsers.root.ParserRoot):
                 'Schedule for event "{}", place "{}" on "{} {}" exists'.format(
                     s.event.ext_id, s.place.ext_id, s.date, s.start_time))
         s.save()
+        logger.debug(
+            'Schedule "%s" : "%s" : "%s" has added',
+            s.event.ext_id, s.place.ext_id, s.date)

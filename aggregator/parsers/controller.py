@@ -3,14 +3,14 @@ import logging
 import aggregator.parsers.kudago
 
 
-logger = logging.getLogger('apps.parsers.controller')
+logger = logging.getLogger('aggregator.parsers.controller')
 
 
 class Controller(object):
     """
     Store and run your parsers from here
 
-    See logs/apps.log after processing to catch errors and unknowns
+    See logs/aggregator.log after processing to catch errors and unknowns
     """
 
     # add your parser here
