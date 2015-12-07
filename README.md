@@ -1,8 +1,7 @@
 # Aggregator
 *Test project on Django framework*
 
-Parse rss feed and fill tables in DB
-Draw models via static pages
+Parse rss feed and fill tables in DB. Draw models via static pages.
 
 **CliIck "Parse NOW" on top-right to parse feeds and fill database**
 
