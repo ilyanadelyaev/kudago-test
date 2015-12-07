@@ -25,6 +25,7 @@ sudo pip install pylint
 ## Run
 ```
 ./sh/run.sh
+http://127.0.0.1:8000
 ```
 
 ## Build package
