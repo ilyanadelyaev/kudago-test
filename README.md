@@ -4,7 +4,7 @@
 Parse rss feed and fill tables in DB
 Draw models via static pages
 
-** CliIck "Parse NOW" on top-right to parse feeds and fill database **
+*CliIck "Parse NOW" on top-right to parse feeds and fill database*
 
 ## Initialize
 ```
